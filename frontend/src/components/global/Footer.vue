@@ -288,7 +288,7 @@ export default {
   color: var(--accent-primary);
 }
 
- * {
+* {
   background-color: transparent;
 }
 
