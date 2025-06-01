@@ -9,7 +9,7 @@ export interface IChargingStation extends Document {
   };
   status: 'Active' | 'Inactive' | 'Maintenance';
   powerOutput: number;
-  connectorType: 'Type 1' | 'Type 2' | 'CCS' | 'CHAdeMO' | 'CHAdeMO' | 'GB/T';
+  connectorType: 'Type1' | 'Type2' | 'CCS' | 'CHAdeMO' | 'CHAdeMO' | 'GB/T';
   createdBy: mongoose.Types.ObjectId;
 }
 
@@ -40,7 +40,7 @@ const ChargingStationSchema: Schema<IChargingStation> = new Schema(
     },
     connectorType: {
       type: String,
-      enum: ['Type 1', 'Type 2', 'CCS', 'CHAdeMO', 'CHAdeMO', 'GB/T'],
+      enum: ['Type1', 'Type2', 'CCS', 'CHAdeMO', 'CHAdeMO', 'GB/T'],
       required: true,
     },
     createdBy: {

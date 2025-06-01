@@ -1,32 +1,40 @@
-<script setup lang="ts">
-import { ref } from 'vue'
+<script lang="ts">
 import { RouterLink } from 'vue-router'
 import { Zap, MapPin, Shield, TrendingUp, ArrowRight, Play, Globe } from 'lucide-vue-next'
 
-const stats = ref([
-  { label: 'Active Stations', value: '2,500+', icon: Zap },
-  { label: 'Cities Covered', value: '150+', icon: MapPin },
-  { label: 'Uptime', value: '99.9%', icon: Shield },
-  { label: 'Growth Rate', value: '300%', icon: TrendingUp }
-])
-
-const features = ref([
-  {
-    title: 'Smart Management',
-    description: 'Monitor and control your charging stations with real-time analytics and automated management.',
-    icon: Zap
+export default {
+  name: 'Home',
+  components: {
+    RouterLink
   },
-  {
-    title: 'Global Coverage',
-    description: 'Expand your network across multiple locations with our comprehensive mapping system.',
-    icon: Globe
-  },
-  {
-    title: 'Secure & Reliable',
-    description: 'Enterprise-grade security with 99.9% uptime guarantee for uninterrupted service.',
-    icon: Shield
+  data() {
+    return {
+      stats: [
+        { label: 'Active Stations', value: '2,500+', icon: Zap },
+        { label: 'Cities Covered', value: '150+', icon: MapPin },
+        { label: 'Uptime', value: '99.9%', icon: Shield },
+        { label: 'Growth Rate', value: '300%', icon: TrendingUp }
+      ],
+      features: [
+        {
+          title: 'Smart Management',
+          description: 'Monitor and control your charging stations with real-time analytics and automated management.',
+          icon: Zap
+        },
+        {
+          title: 'Global Coverage',
+          description: 'Expand your network across multiple locations with our comprehensive mapping system.',
+          icon: Globe
+        },
+        {
+          title: 'Secure & Reliable',
+          description: 'Enterprise-grade security with 99.9% uptime guarantee for uninterrupted service.',
+          icon: Shield
+        }
+      ]
+    }
   }
-])
+}
 </script>
 
 <template>
@@ -179,7 +187,7 @@ const features = ref([
   box-shadow: var(--shadow-md);
 }
 
-.btn-primary > * {
+.btn-primary>* {
   background-color: transparent;
 }
 
@@ -235,7 +243,7 @@ const features = ref([
   border: 2px solid var(--accent-primary);
 }
 
-.station-icon > * {
+.station-icon>* {
   background-color: transparent;
 }
 

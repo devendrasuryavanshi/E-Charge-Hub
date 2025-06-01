@@ -1,8 +1,12 @@
 <script lang="ts">
-import { User, Menu, X, LogOut, Settings, Zap } from 'lucide-vue-next';
+import { defineComponent, computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+import { User, Menu, X, LogOut, Settings, Zap } from 'lucide-vue-next'
+import router from '@/router'
 
-export default {
-  name: "Navbar",
+export default defineComponent({
+  name: 'Navbar',
   components: {
     Zap,
     User,
@@ -17,43 +21,52 @@ export default {
       showUserPopup: false
     }
   },
+  setup() {
+    const auth = useAuthStore()
+    const router = useRouter()
+
+    const isAuthenticated = computed(() => !!auth.user)
+
+    const handleLogout = async () => {
+      await auth.logout()
+      router.push('/login')
+    }
+
+    return {
+      auth,
+      isAuthenticated,
+      handleLogout
+    }
+  },
   methods: {
     toggleMobileMenu(event: Event) {
-      event.stopPropagation();
-      this.showMobileMenu = !this.showMobileMenu;
+      event.stopPropagation()
+      this.showMobileMenu = !this.showMobileMenu
     },
     toggleUserPopup(event: Event) {
-      event.stopPropagation();
-      this.showUserPopup = !this.showUserPopup;
+      event.stopPropagation()
+      this.showUserPopup = !this.showUserPopup
     },
     closeMobileMenu() {
-      this.showMobileMenu = false;
+      this.showMobileMenu = false
     },
     closeUserPopup() {
-      this.showUserPopup = false;
+      this.showUserPopup = false
     },
     handleProfile() {
-      console.log('Profile clicked');
-      this.closeUserPopup();
+      this.closeUserPopup()
+      router.push('/profile')
     },
-    handleSettings() {
-      console.log('Settings clicked');
-      this.closeUserPopup();
-    },
-    handleLogout() {
-      console.log('Logout clicked');
-      this.closeUserPopup();
-    }
   },
   mounted() {
     document.addEventListener('click', (e) => {
       if (!this.$el.contains(e.target)) {
-        this.showUserPopup = false;
-        this.showMobileMenu = false;
+        this.showUserPopup = false
+        this.showMobileMenu = false
       }
-    });
+    })
   }
-};
+})
 </script>
 
 <template>
@@ -73,32 +86,30 @@ export default {
     </div>
 
     <div class="nav-actions">
-      <div class="user-menu">
+      <div v-if="isAuthenticated" class="user-menu">
         <button class="user-btn" @click="toggleUserPopup">
-          <img class="user-icon" src="https://static.vecteezy.com/system/resources/previews/011/490/381/non_2x/happy-smiling-young-man-avatar-3d-portrait-of-a-man-cartoon-character-people-illustration-isolated-on-white-background-vector.jpg" alt="">
+          <img class="user-icon"
+            src="https://static.vecteezy.com/system/resources/previews/011/490/381/non_2x/happy-smiling-young-man-avatar-3d-portrait-of-a-man-cartoon-character-people-illustration-isolated-on-white-background-vector.jpg"
+            alt="User" />
         </button>
-
         <div v-if="showUserPopup" class="user-popup">
           <button class="popup-item" @click="handleProfile">
-            <User :size="16" />
-            Profile
-          </button>
-          <button class="popup-item" @click="handleSettings">
-            <Settings :size="16" />
-            Settings
+            <User :size="16" /> Profile
           </button>
           <button class="popup-item logout" @click="handleLogout">
-            <LogOut :size="16" />
-            Logout
+            <LogOut :size="16" /> Logout
           </button>
         </div>
       </div>
+
+      <RouterLink v-else to="/login" class="nav-link">Login</RouterLink>
 
       <button class="mobile-menu-btn" @click="toggleMobileMenu">
         <Menu v-if="!showMobileMenu" strokeWidth="2" color="#b4b4c7" :size="24" />
         <X v-else strokeWidth="2" color="#b4b4c7" :size="24" />
       </button>
     </div>
+
 
     <div v-if="showMobileMenu" class="mobile-nav">
       <RouterLink to="/" class="mobile-nav-link" @click="closeMobileMenu">Dashboard</RouterLink>
@@ -183,7 +194,7 @@ export default {
   transform: translateY(-1px);
 }
 
-.popup-item > * {
+.popup-item>* {
   background-color: transparent;
 }
 
@@ -278,7 +289,7 @@ export default {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.mobile-menu-btn > * {
+.mobile-menu-btn>* {
   background-color: transparent;
 }
 

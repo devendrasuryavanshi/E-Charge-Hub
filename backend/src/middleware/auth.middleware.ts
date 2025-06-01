@@ -17,13 +17,11 @@ declare global {
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
   let token;
 
-  if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    token = req.headers.authorization.split(' ')[1];
-  } else if(req.cookies?.token) {
+  if (req.cookies?.token) {
     token = req.cookies.token;
   }
 
-  if(!token) {
+  if (!token) {
     return res.status(401).json({ message: 'Not authorized, no token found' });
   }
 
@@ -31,7 +29,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
     const decoded: any = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.id).select('-password');
 
-    if(!user) {
+    if (!user) {
       return res.status(401).json({ message: 'Not authorized, user not found' });
     }
 

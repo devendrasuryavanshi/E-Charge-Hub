@@ -1,15 +1,14 @@
-<script lang="ts">
+<script setup lang="ts">
 import { RouterView } from 'vue-router'
 import NavBar from './components/global/Navbar.vue';
 import Footer from './components/global/Footer.vue';
+import { useAuthStore } from './stores/auth';
+import { onMounted } from 'vue';
 
-export default {
-  name: 'App',
-  components: {
-    NavBar,
-    Footer,
-  }
-}
+const auth = useAuthStore()
+onMounted(() => {
+  auth.fetchUser()
+})
 </script>
 
 <template>
