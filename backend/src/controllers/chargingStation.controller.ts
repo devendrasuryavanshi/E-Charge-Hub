@@ -8,6 +8,9 @@ export const create = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
+    console.log("latitude", latitude)
+    console.log("longitude", longitude)
+
     const chargingStation: IChargingStation = new ChargingStation({
       name,
       coordinates: {
@@ -42,13 +45,15 @@ export const getAll = async (req: Request, res: Response) => {
   try {
     const status = req.query.status as string;
     const search = req.query.search as string;
-    const powerOutput = req.query.powerOutput as string;
+    const powerOutput = parseFloat(req.query.powerOutput as string);
     const connectorType = req.query.connectorType as string;
     const latitude = parseFloat(req.query.latitude as string);
     const longitude = parseFloat(req.query.longitude as string);
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
     const skip = (page - 1) * limit;
+
+    // console.log("powerOutput:", powerOutput);
 
     const matchConditions: any = {};
     const andConditions: any[] = [];
@@ -83,8 +88,8 @@ export const getAll = async (req: Request, res: Response) => {
     }
 
     // Power output
-    if (powerOutput && powerOutput.trim()) {
-      andConditions.push({ powerOutput: powerOutput.trim() });
+    if (powerOutput && !isNaN(powerOutput)) {
+      andConditions.push({ powerOutput: powerOutput });
     }
 
     // Connector type
@@ -105,7 +110,7 @@ export const getAll = async (req: Request, res: Response) => {
           $project: {
             _id: 1,
             name: 1,
-            location: 1,
+            coordinates: 1,
             status: 1,
             powerOutput: 1,
             connectorType: 1,
@@ -120,9 +125,9 @@ export const getAll = async (req: Request, res: Response) => {
     const chargingStations = aggregateResult.map((station: any) => ({
       id: station._id,
       name: station.name,
-      location: {
-        latitude: station.location?.coordinates?.[1] || null,
-        longitude: station.location?.coordinates?.[0] || null
+      coordinates: {
+        latitude: station.coordinates?.latitude || null,
+        longitude: station.coordinates?.longitude || null
       },
       status: station.status,
       powerOutput: station.powerOutput,
@@ -192,7 +197,6 @@ export const getAll = async (req: Request, res: Response) => {
     });
   }
 };
-
 
 export const getById = async (req: Request, res: Response) => {
   try {

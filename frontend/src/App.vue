@@ -6,6 +6,7 @@ import { useAuthStore } from './stores/auth';
 import { onMounted } from 'vue';
 
 const auth = useAuthStore()
+const currentPath = window.location.pathname
 onMounted(() => {
   auth.fetchUser()
 })
@@ -17,7 +18,7 @@ onMounted(() => {
     <main class="main-content">
       <RouterView />
     </main>
-    <Footer />
+    <Footer  v-if="currentPath !== '/station'" />
   </div>
 </template>
 

@@ -199,9 +199,7 @@ export default defineComponent({
 }
 
 .nav-link.router-link-active {
-  background-color: var(--accent-primary);
   color: var(--text-primary);
-  box-shadow: var(--shadow-md);
 }
 
 .nav-actions {

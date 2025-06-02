@@ -3,7 +3,8 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Profile from '../views/Profile.vue'
-// import Station from '../views/Station.vue'
+import Station from '../views/Station.vue'
+import AddStation from '../views/AddStation.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const routes = [
@@ -22,12 +23,18 @@ const routes = [
     name: 'register',
     component: Register,
   },
-  // {
-  //   path: '/station',
-  //   name: 'Station',
-  //   component: Station,
-  //   meta: { requiresAuth: true }
-  // },
+  {
+    path: '/station',
+    name: 'Station',
+    component: Station,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/add-station',
+    name: 'AddStation',
+    component: AddStation,
+    meta: { requiresAuth: true }
+  },
   {
     path: '/profile',
     name: 'profile',

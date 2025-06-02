@@ -12,15 +12,19 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "@vue-leaflet/vue-leaflet": "^0.10.1",
     "axios": "^1.9.0",
+    "leaflet": "^1.9.4",
     "lucide-vue-next": "^0.511.0",
     "pinia": "^3.0.2",
     "vue": "^3.5.13",
+    "vue-leaflet": "^0.1.0",
     "vue-router": "^4.5.0",
     "vue3-toastify": "^0.2.8"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.1",
+    "@types/leaflet": "^1.9.18",
     "@types/node": "^22.15.29",
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/eslint-config-typescript": "^14.5.0",
