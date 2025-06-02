@@ -4,7 +4,10 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Profile from '../views/Profile.vue'
 import Station from '../views/Station.vue'
-import AddStation from '../views/AddStation.vue'
+import StationCreate from '../views/StationCreate.vue'
+import StationEdit from '../views/StationEdit.vue'
+import Dashboard from '../views/Dashboard.vue'
+import Price from '../views/Price.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const routes = [
@@ -24,22 +27,39 @@ const routes = [
     component: Register,
   },
   {
-    path: '/station',
-    name: 'Station',
+    path: '/stations',
+    name: 'station',
     component: Station,
     meta: { requiresAuth: true }
   },
   {
-    path: '/add-station',
-    name: 'AddStation',
-    component: AddStation,
+    path: '/stations/create',
+    name: 'station-create',
+    component: StationCreate,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/stations/:id/edit',
+    name: 'station-edit',
+    component: StationEdit,
+    meta: { requiresAuth: true },
+    props: true
   },
   {
     path: '/profile',
     name: 'profile',
     component: Profile,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: Dashboard,
+  },
+  {
+    path: '/price',
+    name: 'price',
+    component: Price,
   }
 ]
 

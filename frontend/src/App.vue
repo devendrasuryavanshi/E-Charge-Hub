@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import NavBar from './components/global/Navbar.vue';
-import Footer from './components/global/Footer.vue';
+import NavBar from './components/layout/Navbar.vue';
+import Footer from './components/layout/Footer.vue';
 import { useAuthStore } from './stores/auth';
 import { onMounted } from 'vue';
 

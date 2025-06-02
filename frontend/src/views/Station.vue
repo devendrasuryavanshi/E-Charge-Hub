@@ -1,6 +1,6 @@
 <script lang="ts">
 import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue'
-import { Search, Filter, MapPin, Zap, Clock, Wifi, ChevronDown, Loader2, LocateFixed, X, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { Search, Filter, MapPin, Zap, Clock, Wifi, ChevronDown, Loader2, LocateFixed, X, ChevronLeft, ChevronRight, Edit, Trash2, AlertTriangle } from 'lucide-vue-next'
 import { LMap, LTileLayer, LMarker, LPopup, LIcon } from '@vue-leaflet/vue-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -10,6 +10,8 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import api from '@/plugins/axios';
 import { toast } from 'vue3-toastify';
+import { useAuthStore } from '@/stores/auth';
+import router from '@/router';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
@@ -29,6 +31,7 @@ interface Station {
     latitude: number;
     longitude: number;
   };
+  createdBy: string;
 }
 
 export default {
@@ -45,6 +48,9 @@ export default {
     X,
     ChevronLeft,
     ChevronRight,
+    Edit,
+    Trash2,
+    AlertTriangle,
     LMap,
     LMarker,
     LPopup,
@@ -64,7 +70,12 @@ export default {
     const stations = ref<Station[]>([])
     const mapCenter = ref<[number, number]>([40.7128, -74.0060])
     const mapZoom = ref(13)
-    const mapBounds = ref(null)
+    const auth = useAuthStore();
+    const userId = auth.user?.id.toString();
+    const showDeleteModal = ref(false)
+    const stationToDelete = ref<Station | null>(null)
+    const isDeleting = ref(false)
+
 
     const placeSearchQuery = ref('')
     const searchSuggestions = ref<any[]>([])
@@ -350,12 +361,52 @@ export default {
       }
     )
 
+    const editStation = (station: Station) => {
+      router.push({ name: 'station-edit', params: { id: station.id } })
+    }
+
+    const confirmDelete = (station: Station) => {
+      stationToDelete.value = station
+      showDeleteModal.value = true
+    }
+
+    const cancelDelete = () => {
+      showDeleteModal.value = false
+      stationToDelete.value = null
+    }
+
+    const deleteStation = async () => {
+      if (!stationToDelete.value) return
+
+      isDeleting.value = true
+      try {
+        const response = await api.delete(`/charging-stations/${stationToDelete.value.id}`)
+        if (response.data.success) {
+          toast.success('Station deleted successfully')
+          stations.value = stations.value.filter(s => s.id !== stationToDelete.value!.id)
+          if (selectedStation.value?.id === stationToDelete.value.id) {
+            selectedStation.value = null
+          }
+          cancelDelete()
+        } else {
+          toast.error(response.data.message || 'Failed to delete station')
+        }
+      } catch (error: any) {
+        console.error('Error deleting station:', error)
+        toast.error(error.response?.data?.message || 'Failed to delete station')
+      } finally {
+        isDeleting.value = false
+      }
+    }
+
+
     onMounted(() => {
       fetchStations()
       document.addEventListener('click', handleClickOutside)
     })
 
     return {
+      userId,
       map,
       isLoading,
       selectedStation,
@@ -375,6 +426,13 @@ export default {
       totalPages,
       hasNextPage,
       hasPreviousPage,
+      showDeleteModal,
+      stationToDelete,
+      isDeleting,
+      editStation,
+      confirmDelete,
+      cancelDelete,
+      deleteStation,
       fetchNextPage,
       fetchPreviousPage,
       getStatusColor,
@@ -467,6 +525,16 @@ export default {
                   <span>{{ station.coordinates?.latitude?.toFixed(4) }}, {{ station.coordinates?.longitude?.toFixed(4)
                   }}</span>
                 </div>
+                <div v-if="station.createdBy === userId" class="edit-delete-buttons">
+                  <button @click.stop="editStation(station)" class="edit-button">
+                    <Edit :size="14" />
+                    Edit
+                  </button>
+                  <button @click.stop="confirmDelete(station)" class="delete-button">
+                    <Trash2 :size="14" />
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -549,6 +617,56 @@ export default {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+  <!-- Delete Confirmation Modal -->
+  <div v-if="showDeleteModal" class="modal-overlay" @click="cancelDelete">
+    <div class="modal-content" @click.stop>
+      <div class="modal-header">
+        <h3>Confirm Delete</h3>
+        <button @click="cancelDelete" class="modal-close-btn">
+          <X :size="20" />
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="warning-icon">
+          <AlertTriangle :size="48" />
+        </div>
+        <p class="modal-message">
+          Are you sure you want to delete this charging station?
+        </p>
+
+        <div v-if="stationToDelete" class="station-details-modal">
+          <div class="detail-item-modal">
+            <strong>Name:</strong> {{ stationToDelete.name }}
+          </div>
+          <div class="detail-item-modal">
+            <strong>Status:</strong> {{ stationToDelete.status }}
+          </div>
+          <div class="detail-item-modal">
+            <strong>Power:</strong> {{ stationToDelete.powerOutput }}kW
+          </div>
+          <div class="detail-item-modal">
+            <strong>Type:</strong> {{ stationToDelete.connectorType }}
+          </div>
+        </div>
+
+        <p class="warning-text">
+          This action cannot be undone.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button @click="cancelDelete" class="cancel-btn" :disabled="isDeleting">
+          Cancel
+        </button>
+        <button @click="deleteStation" class="confirm-delete-btn" :disabled="isDeleting">
+          <Loader2 v-if="isDeleting" :size="16" class="spinner" />
+          <Trash2 v-else :size="16" />
+          {{ isDeleting ? 'Deleting...' : 'Delete Station' }}
+        </button>
       </div>
     </div>
   </div>
@@ -675,6 +793,239 @@ export default {
   animation: spin 1s linear infinite;
   margin-bottom: 12px;
   background-color: transparent;
+}
+
+/* Edit/Delete Buttons */
+.edit-delete-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  background-color: transparent;
+}
+
+.edit-button,
+.delete-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-button {
+  background-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.edit-button:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.delete-button {
+  background-color: var(--danger);
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  max-width: 450px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-primary);
+  background-color: transparent;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background-color: transparent;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: 24px;
+  text-align: center;
+  background-color: transparent;
+}
+
+.warning-icon {
+  color: var(--warning);
+  margin-bottom: 16px;
+  background-color: transparent;
+}
+
+.modal-message {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  background-color: transparent;
+}
+
+.station-details-modal {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  text-align: left;
+}
+
+.detail-item-modal {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  background-color: transparent;
+}
+
+.detail-item-modal:last-child {
+  margin-bottom: 0;
+}
+
+.detail-item-modal strong {
+  color: var(--text-primary);
+  background-color: transparent;
+}
+
+.warning-text {
+  font-size: 0.9rem;
+  color: var(--warning);
+  font-weight: 500;
+  margin-top: 16px;
+  background-color: transparent;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid var(--border-primary);
+  background-color: transparent;
+}
+
+.cancel-btn,
+.confirm-delete-btn {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.cancel-btn {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-secondary);
+  color: var(--text-secondary);
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.confirm-delete-btn {
+  background-color: var(--danger);
+  color: white;
+}
+
+.confirm-delete-btn:hover:not(:disabled) {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.cancel-btn:disabled,
+.confirm-delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 16px;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .edit-delete-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .edit-button,
+  .delete-button {
+    justify-content: center;
+  }
 }
 
 @keyframes spin {

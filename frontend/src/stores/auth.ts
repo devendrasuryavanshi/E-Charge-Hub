@@ -3,17 +3,20 @@ import api from '@/plugins/axios'
 import { defineStore } from 'pinia'
 
 interface User {
+  id: number
   name: string
   email: string
 }
 
 interface AuthState {
+  id: number | null
   user: User | null
   loading: boolean
 }
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
+    id: null,
     user: null,
     loading: true
   }),

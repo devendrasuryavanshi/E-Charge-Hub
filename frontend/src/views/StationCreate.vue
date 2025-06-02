@@ -20,7 +20,7 @@ L.Icon.Default.mergeOptions({
 })
 
 export default {
-  name: 'AddStation',
+  name: 'StationCreate',
   components: {
     LMap,
     LTileLayer,
@@ -248,7 +248,7 @@ export default {
 
         if (response.data.success) {
           toast.success('Charging station created successfully!')
-          router.push('/station')
+          router.back();
         } else {
           toast.error(response.data.message || 'Failed to create charging station')
         }
@@ -265,7 +265,7 @@ export default {
     }
 
     const handleCancel = () => {
-      router.push('/station')
+      router.back();
     }
 
     onMounted(() => {
@@ -1024,17 +1024,10 @@ export default {
   .form-section {
     border-right: none;
     border-bottom: 1px solid var(--border-primary);
-    max-height: 60vh;
   }
 
   .map-section {
     min-height: 40vh;
-  }
-
-  .header-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
   }
 
   .form-container {
