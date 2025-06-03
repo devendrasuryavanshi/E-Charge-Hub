@@ -24,8 +24,8 @@ export default {
     const showPassword = ref(false)
 
     const form = reactive({
-      email: '',
-      password: ''
+      email: 'abc@gmail.com',
+      password: '123456'
     })
 
     const errors = reactive({
@@ -109,6 +109,8 @@ export default {
     if (auth.user) {
       router.push('/')
     }
+    // demo login toast with email and password
+    toast.success('Demo login: email: abc@gmail.com, password: 123456', { autoClose: 10000, position: toast.POSITION.TOP_CENTER });
   }
 }
 </script>
