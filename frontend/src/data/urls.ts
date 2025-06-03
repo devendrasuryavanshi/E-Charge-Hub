@@ -1,2 +1,2 @@
-export const CLIENT_URL = 'http://localhost:5173/';
-export const API_URL = 'http://localhost:3000/api'
+export const CLIENT_URL = 'https://e-charge-hub.onrender.com';
+export const API_URL = 'https://e-charge-hub.onrender.com/api'
