@@ -5,7 +5,7 @@ import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-vue-next'
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { login } from '../services/auth.service'
-import { CLIENT_URL } from '../data/urls'
+import { CLIENT_URL } from '../constants/urls'
 import { useAuthStore } from '@/stores/auth';
 import router from '@/router';
 

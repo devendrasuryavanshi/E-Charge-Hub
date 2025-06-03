@@ -1,4 +1,4 @@
-import { API_URL } from '@/data/urls';
+import { API_URL } from '@/constants/urls';
 import axios from 'axios';
 
 const api = axios.create({

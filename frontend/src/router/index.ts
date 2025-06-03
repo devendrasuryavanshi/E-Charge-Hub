@@ -5,8 +5,6 @@ import Profile from '../views/Profile.vue'
 import Station from '../views/Station.vue'
 import StationCreate from '../views/StationCreate.vue'
 import StationEdit from '../views/StationEdit.vue'
-import Dashboard from '../views/Dashboard.vue'
-import Price from '../views/Price.vue'
 import { useAuthStore } from '@/stores/auth'
 import Register from '@/views/register.vue'
 
@@ -50,16 +48,6 @@ const routes = [
     name: 'profile',
     component: Profile,
     meta: { requiresAuth: true }
-  },
-  {
-    path: '/dashboard',
-    name: 'dashboard',
-    component: Dashboard,
-  },
-  {
-    path: '/price',
-    name: 'price',
-    component: Price,
   }
 ]
 

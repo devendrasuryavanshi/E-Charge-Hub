@@ -79,9 +79,8 @@ export default defineComponent({
     </RouterLink>
 
     <div class="nav-links desktop-nav">
-      <RouterLink to="/dashboard" class="nav-link">Dashboard</RouterLink>
       <RouterLink to="/stations" class="nav-link">Stations</RouterLink>
-      <RouterLink to="/price" class="nav-link">Pricings</RouterLink>
+      <span class="nav-link">Pricings</span>
       <RouterLink to="/stations/create" class="nav-link">Create Station</RouterLink>
     </div>
 
@@ -112,9 +111,8 @@ export default defineComponent({
 
 
     <div v-if="showMobileMenu" class="mobile-nav">
-      <RouterLink to="/dashboard" class="mobile-nav-link" @click="closeMobileMenu">Dashboard</RouterLink>
       <RouterLink to="/stations" class="mobile-nav-link" @click="closeMobileMenu">Stations</RouterLink>
-      <RouterLink to="/price" class="mobile-nav-link" @click="closeMobileMenu">Pricings</RouterLink>
+      <RouterLink to="/" class="mobile-nav-link" @click="closeMobileMenu">Pricings</RouterLink>
       <RouterLink to="/stations/create" class="mobile-nav-link" @click="closeMobileMenu">Create Station</RouterLink>
     </div>
   </nav>
@@ -187,6 +185,7 @@ export default defineComponent({
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: transparent;
   font-size: 0.95rem;
+  cursor: pointer;
 }
 
 .nav-link:hover {
