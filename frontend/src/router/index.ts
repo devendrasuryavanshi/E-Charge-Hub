@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
-import Register from '../views/Register.vue'
 import Profile from '../views/Profile.vue'
 import Station from '../views/Station.vue'
 import StationCreate from '../views/StationCreate.vue'
@@ -9,6 +8,7 @@ import StationEdit from '../views/StationEdit.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Price from '../views/Price.vue'
 import { useAuthStore } from '@/stores/auth'
+import Register from '@/views/register.vue'
 
 const routes = [
   {

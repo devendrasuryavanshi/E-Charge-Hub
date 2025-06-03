@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import ChargingStation, { IChargingStation } from '../models/chargingStation.model';
+import mongoose from 'mongoose';
 
 export const create = async (req: Request, res: Response) => {
   try {
@@ -48,6 +49,7 @@ export const getAll = async (req: Request, res: Response) => {
     const powerOutput = parseFloat(req.query.powerOutput as string);
     const connectorType = req.query.connectorType as string;
     const latitude = parseFloat(req.query.latitude as string);
+    const isGetByUserId = req.query.getByUserId as string;
     const longitude = parseFloat(req.query.longitude as string);
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
@@ -63,6 +65,10 @@ export const getAll = async (req: Request, res: Response) => {
       andConditions.push({
         name: { $regex: search.trim(), $options: 'i' }
       });
+    }
+
+    if (isGetByUserId === 'true') {
+      andConditions.push({ createdBy: new mongoose.Types.ObjectId(req.user.id) });
     }
 
     // location-based
@@ -114,6 +120,7 @@ export const getAll = async (req: Request, res: Response) => {
             status: 1,
             powerOutput: 1,
             connectorType: 1,
+            createdBy: 1,
             createdAt: 1,
             updatedAt: 1
           }
@@ -132,6 +139,7 @@ export const getAll = async (req: Request, res: Response) => {
       status: station.status,
       powerOutput: station.powerOutput,
       connectorType: station.connectorType,
+      createdBy: station.createdBy,
       createdAt: station.createdAt,
       updatedAt: station.updatedAt
     }));
@@ -217,7 +225,7 @@ export const getById = async (req: Request, res: Response) => {
 
 export const update = async (req: Request, res: Response) => {
   try {
-    const { name, location: { latitude, longitude }, status, powerOutput, connectorType } = req.body;
+    const { name, latitude, longitude, status, powerOutput, connectorType } = req.body;
     const id = req.params.id;
     if (!name || !latitude || !longitude || !status || !powerOutput || !connectorType) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -257,6 +265,7 @@ export const update = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: errors });
     }
     res.status(500).json({ success: false, message: 'Server error' });
+    console.error('Error in update charging station:', error);
   }
 }
 

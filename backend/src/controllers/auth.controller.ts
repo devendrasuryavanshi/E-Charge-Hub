@@ -127,6 +127,7 @@ export const getCurrentUser = async (req: Request, res: Response) => {
       success: true,
       data: {
         user: {
+          id: user.id,
           name: user.name,
           email: user.email
         }
