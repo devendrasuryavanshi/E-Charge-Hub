@@ -51,7 +51,7 @@ export default {
             Built for the next generation of sustainable transportation.
           </p>
           <div class="hero-actions">
-            <RouterLink to="/dashboard" class="btn-primary">
+            <RouterLink to="/stations" class="btn-primary">
               Get Started
               <ArrowRight :size="20" />
             </RouterLink>
